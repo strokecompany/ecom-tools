@@ -6,7 +6,7 @@
   "author": "Junho Yeo <i@junho.io>",
   "license": "MIT",
   "scripts": {
-    "start": "tsx src/index.ts",
+    "refresh-sftp": "tsx src/refresh-sftp.ts",
     "reviews": "tsx src/reviews.ts"
   },
   "dependencies": {
