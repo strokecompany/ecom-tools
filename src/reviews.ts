@@ -1,5 +1,97 @@
 import axios from 'axios';
 
+export type ReviewsQueryPagesResponse = {
+  contents: Array<{
+    id: number;
+    reviewType: string;
+    reviewServiceType: string;
+    reviewContentClassType: string;
+    reviewScore: number;
+    reviewContent: string;
+    contentsStatusType: string;
+    createDate: string;
+    freeTrial: boolean;
+    repurchase: boolean;
+    reviewRankingScore: number;
+    writerId: string;
+    maskedWriterId: string;
+    writerIdNo: string;
+    writerMemberNo: number;
+    writerProfileImageUrl: string;
+    storeType: string;
+    storeNo: number;
+    checkoutMerchantId: string;
+    checkoutMerchantNo: number;
+    orderNo: string;
+    productOrderNo: string;
+    productNo: string;
+    productName: string;
+    productUrl: string;
+    largeCategorizeCategoryId: string;
+    middleCategorizeCategoryId: string;
+    smallCategorizeCategoryId: string;
+    detailCategorizeCategoryId: string;
+    productOptionContentNoDisplay: boolean;
+    productOptionContent: string;
+    knowledgeShoppingMallProductId: string;
+    originProductNo: number;
+    standardPurchaseConditionText: string;
+    reviewAttaches: Array<{
+      id: number;
+      reviewAttachmentType: string;
+      attachUrl: string;
+      attachWidth: number;
+      attachHeight: number;
+      attachPath: string;
+      attachSize: number;
+      attachDescription: string;
+      sortOrder: number;
+      blind: boolean;
+      attachName: string;
+      attachDirectoryName: string;
+    }>;
+    reviewEvaluationValueIds: Array<any>;
+    reviewTopics?: Array<{
+      topicCode: string;
+      topicCodeName: string;
+      patternStartNo: number;
+      patternEndNo: number;
+    }>;
+    eventTitle: string;
+    profileImageSourceType: string;
+    repThumbnailAttach?: {
+      id: number;
+      reviewAttachmentType: string;
+      attachUrl: string;
+      attachWidth: number;
+      attachHeight: number;
+      attachPath: string;
+      attachSize: number;
+      attachDescription: string;
+      sortOrder: number;
+      blind: boolean;
+      attachName: string;
+      attachDirectoryName: string;
+    };
+    repThumbnailTagNameDescription: {};
+    isMyReview: boolean;
+    parentReviewId?: number;
+  }>;
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  sort: {
+    sorted: boolean;
+    fields: Array<{
+      name: string;
+      direction: string;
+    }>;
+  };
+  first: boolean;
+  last: boolean;
+};
+
 const SMARTSTORE = {
   id: 'muzii',
   originProductNo: 9744839793,
@@ -7,12 +99,12 @@ const SMARTSTORE = {
   merchantNo: 511005182,
 };
 const main = async () => {
-  const response = await axios.post(
+  const response = await axios.post<ReviewsQueryPagesResponse>(
     'https://smartstore.naver.com/i/v1/contents/reviews/query-pages',
     {
       checkoutMerchantNo: SMARTSTORE.merchantNo,
       originProductNo: SMARTSTORE.originProductNo,
-      page: 2,
+      page: 1,
       pageSize: 20,
       reviewSearchSortType: 'REVIEW_RANKING',
     },
@@ -37,7 +129,10 @@ const main = async () => {
       },
     },
   );
-  console.log(JSON.stringify(response.data));
+  const { contents, ...data } = response.data;
+
+  // {"page":1,"size":20,"totalElements":90,"totalPages":5,"sort":{"sorted":true,"fields":[{"name":"reviewRankingScore","direction":"desc"},{"name":"createDate","direction":"desc"}]},"first":true,"last":false}
+  console.log(JSON.stringify(data));
 };
 
 main();
