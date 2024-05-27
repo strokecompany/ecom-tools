@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer';
 
 const main = async () => {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
   });
   const page = await browser.newPage();
 
@@ -87,6 +87,8 @@ const main = async () => {
   );
 
   console.log(response.data);
+
+  await page.close();
 };
 
 main().catch((err) => console.error(err));
