@@ -48,16 +48,36 @@ const main = async () => {
   const cookies = await page.cookies();
   // console.log(cookies);
 
+  const [start_datetime, expire_datetime] = (() => {
+    // 현재 날짜 객체 생성
+    const now = new Date();
+
+    // 시작 날짜를 어제로 설정하고 시간을 15:00:00Z로 설정
+    const startDateTime = new Date(now);
+    startDateTime.setDate(startDateTime.getDate() - 1);
+    startDateTime.setUTCHours(15, 0, 0, 0);
+
+    // 만료 날짜를 시작 날짜로부터 7일 후로 설정하고 시간을 14:59:59Z로 설정
+    const expireDateTime = new Date(startDateTime);
+    expireDateTime.setDate(expireDateTime.getDate() + 7);
+    expireDateTime.setUTCHours(14, 59, 59, 0);
+
+    // 설정된 날짜와 시간을 ISO 문자열로 변환
+    return [startDateTime.toISOString(), expireDateTime.toISOString()];
+  })();
+
+  console.log({
+    start_datetime,
+    expire_datetime,
+  });
+
   const response = await axios.post(
-    // FIXME:
     `https://${credentials.id}.cafe24.com/exec/admin/skin/SftpRegist`,
     new URLSearchParams({
       username: credentials.id,
       password: credentials.password,
-
-      // FIXME:
-      start_datetime: '2024-05-25T15:00:00Z',
-      expire_datetime: '2024-06-01T14:59:59Z',
+      start_datetime,
+      expire_datetime,
     }),
     {
       headers: {
@@ -89,6 +109,7 @@ const main = async () => {
   console.log(response.data);
 
   await page.close();
+  await browser.close();
 };
 
 main().catch((err) => console.error(err));
