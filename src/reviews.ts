@@ -92,11 +92,13 @@ export type ReviewsQueryPagesResponse = {
   last: boolean;
 };
 
+// https://smartstore.naver.com/i/v1/contents/reviews/gallery-attaches/10332242902?checkoutMerchantNo=511851007&searchSortType=REVIEW_RANKING&page=1&pageSize=100
+// ^ 보면 originProductNo 구할 수 있는 듯?
 const SMARTSTORE = {
-  id: 'muzii',
-  originProductNo: 9744839793,
-  productNo: 9791503929, // FIXME: UNUSED
-  merchantNo: 511005182,
+  id: 'atelierhaus',
+  originProductNo: 10332242902, // 맞는지 확인 필요
+  productNo: 10382323512, // 링크에만 쓰이고 사실상 요청 시엔 안 넘어가는 듯
+  merchantNo: 511851007,
 };
 const main = async () => {
   const response = await axios.post<ReviewsQueryPagesResponse>(
