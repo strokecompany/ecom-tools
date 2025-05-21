@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 export type ReviewsQueryPagesResponse = {
   contents: Array<{
@@ -95,46 +95,53 @@ export type ReviewsQueryPagesResponse = {
 // https://smartstore.naver.com/i/v1/contents/reviews/gallery-attaches/10332242902?checkoutMerchantNo=511851007&searchSortType=REVIEW_RANKING&page=1&pageSize=100
 // ^ 보면 originProductNo 구할 수 있는 듯?
 const SMARTSTORE = {
-  id: 'atelierhaus',
-  originProductNo: 10332242902, // 맞는지 확인 필요
-  productNo: 10382323512, // 링크에만 쓰이고 사실상 요청 시엔 안 넘어가는 듯
-  merchantNo: 511851007,
+  id: process.env.SMARTSTORE_ID || '',
+  originProductNo: process.env.SMARTSTORE_ORIGIN_PRODUCT_NO || '',
+  productNo: process.env.SMARTSTORE_PRODUCT_NO || '',
+  merchantNo: process.env.SMARTSTORE_MERCHANT_NO || '',
 };
 const main = async () => {
-  const response = await axios.post<ReviewsQueryPagesResponse>(
-    'https://smartstore.naver.com/i/v1/contents/reviews/query-pages',
-    {
-      checkoutMerchantNo: SMARTSTORE.merchantNo,
-      originProductNo: SMARTSTORE.originProductNo,
-      page: 1,
-      pageSize: 20,
-      reviewSearchSortType: 'REVIEW_RANKING',
-    },
-    {
-      headers: {
-        'accept-language': 'ko,en;q=0.9,ko-KR;q=0.8,ja;q=0.7',
-        'cache-control': 'no-cache',
-        origin: 'https://smartstore.naver.com',
-        pragma: 'no-cache',
-        priority: 'u=1, i',
-        referer: `https://smartstore.naver.com/${SMARTSTORE.id}/products/${SMARTSTORE.productNo}`, // ?
-        'sec-ch-ua':
-          '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"macOS"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent':
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-        'x-client-version': '20240522102041',
-      },
-    },
-  );
-  const { contents, ...data } = response.data;
+  console.log(SMARTSTORE);
 
-  // {"page":1,"size":20,"totalElements":90,"totalPages":5,"sort":{"sorted":true,"fields":[{"name":"reviewRankingScore","direction":"desc"},{"name":"createDate","direction":"desc"}]},"first":true,"last":false}
-  console.log(JSON.stringify(data));
+  try {
+    const response = await axios.post<ReviewsQueryPagesResponse>(
+      'https://smartstore.naver.com/i/v1/contents/reviews/query-pages',
+      {
+        checkoutMerchantNo: SMARTSTORE.merchantNo,
+        originProductNo: SMARTSTORE.originProductNo,
+        page: 1,
+        pageSize: 20,
+        reviewSearchSortType: 'REVIEW_RANKING',
+      },
+      {
+        headers: {
+          'accept-language': 'ko,en;q=0.9,ko-KR;q=0.8,ja;q=0.7',
+          'cache-control': 'no-cache',
+          origin: 'https://smartstore.naver.com',
+          pragma: 'no-cache',
+          priority: 'u=1, i',
+          referer: `https://smartstore.naver.com/${SMARTSTORE.id}/products/${SMARTSTORE.productNo}`, // ?
+          'sec-ch-ua':
+            '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+          'sec-ch-ua-mobile': '?0',
+          'sec-ch-ua-platform': '"macOS"',
+          'sec-fetch-dest': 'empty',
+          'sec-fetch-mode': 'cors',
+          'sec-fetch-site': 'same-origin',
+          'user-agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+          'x-client-version': '20250512212438',
+        },
+      },
+    );
+    const { contents, ...data } = response.data;
+
+    // {"page":1,"size":20,"totalElements":90,"totalPages":5,"sort":{"sorted":true,"fields":[{"name":"reviewRankingScore","direction":"desc"},{"name":"createDate","direction":"desc"}]},"first":true,"last":false}
+    console.log(JSON.stringify(data));
+  } catch (error) {
+    console.error(error);
+    console.log((error as AxiosError).response?.status);
+  }
 };
 
 main();
